@@ -7,11 +7,10 @@
 
 import Foundation
 
-
 final class GlobalFavoritesModel: ObservableObject {
 	@Published var count: Int = 0
-	@Published var isAutorized: Bool = true
-	
+	@Published var isAuthorized: Bool = false
+
 	func addVacancy() {
 		count += 1
 	}

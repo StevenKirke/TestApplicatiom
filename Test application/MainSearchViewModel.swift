@@ -7,10 +7,18 @@
 
 import Foundation
 
-final class MainSearchViewModel: ObservableObject {
+protocol IMainSearchViewModel: AnyObject {
+	func presentVacancies(present: [MainSearchModel.Response.Vacancy])
+	func presentOffers(present: [MainSearchModel.Response.Offer])
+	func precentCounterVacancies(present: String)
+	func nextScene(id: String)
+}
+
+final class MainSearchViewModel: ObservableObject, IMainSearchViewModel {
 
 	@Published var modelVacancies: [MainSearchModel.ViewModel.Vacancy] = []
 	@Published var modelOffers: [MainSearchModel.ViewModel.Offer] = []
+	@Published var countVacancies: String = ""
 
 	private var showJobPageSceneDelegate: IShowJobPageSceneDelegate
 
@@ -28,7 +36,11 @@ final class MainSearchViewModel: ObservableObject {
 		self.modelOffers = model
 	}
 
-	func nextScene() {
-		showJobPageSceneDelegate.showJobPageScene()
+	func precentCounterVacancies(present: String) {
+		self.countVacancies = present
+	}
+
+	func nextScene(id: String) {
+		showJobPageSceneDelegate.showJobPageScene(id: id)
 	}
 }

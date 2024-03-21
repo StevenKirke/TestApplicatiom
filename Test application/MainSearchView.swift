@@ -9,16 +9,16 @@ import SwiftUI
 
 struct MainSearchView: View {
 
-	@EnvironmentObject var globalModel: GlobalFavoritesModel
+	@EnvironmentObject var globalModelFavorites: GlobalFavoritesModel
 	@ObservedObject var mainSearchViewModel: MainSearchViewModel
 
 	// MARK: - Dependencies
 	var iterator: MainSearchIterator?
 
 	@State var isMainVacancyViewController: Bool = false
+	@State var currentID: String = ""
 
 	var body: some View {
-		NavigationStack {
 			ZStack {
 				Color(hex: "0C0C0C")
 					.edgesIgnoringSafeArea(.all)
@@ -28,16 +28,17 @@ struct MainSearchView: View {
 						OffersCollection(model: mainSearchViewModel.modelOffers)
 						VacanciesCollection(
 							vacancyList: $mainSearchViewModel.modelVacancies,
-							isMainVacancyViewController: $isMainVacancyViewController
+							isMainVacancyViewController: $isMainVacancyViewController,
+							currentID: $currentID
 						)
-						.environmentObject(globalModel)
-							.padding(.top, 16)
+						.environmentObject(globalModelFavorites)
+						.padding(.top, 16)
 						Button(
 							action: {
 							},
 							label: {
-								Text("conjugationVacancy()")
-									.font(.system(size: 14, weight: .regular))
+								Text("Еще \(mainSearchViewModel.countVacancies)")
+									.customFont(style: .textOne)
 									.foregroundColor(.white)
 									.frame(maxWidth: .infinity)
 									.frame(height: 48)
@@ -52,41 +53,11 @@ struct MainSearchView: View {
 				}
 				.padding(.horizontal)
 				.padding(.bottom, 60)
-				.onAppear {
-					iterator?.fitchVacancies()
-				}
 				.onChange(of: isMainVacancyViewController) { _ in
-					iterator?.nextView()
+					iterator?.nextView(id: currentID)
 				}
 			}
 			.navigationBarTitle("", displayMode: .inline)
 			.navigationBarBackButtonHidden(true)
-		}
 	}
-
-//	private func conjugationVacancy() -> String {
-//		var title: String = "Еще "
-//		let count = mainSearchViewModel.modelVacancies.count
-//		let countString = String(count)
-//		let last = countString[countString.index(before: countString.endIndex)]
-//		let convertString = String(last)
-//		switch (convertString, count) {
-//		case (_, 11):
-//			title += "\(count) вакансии"
-//		case ("1", _):
-//			title += "\(count) вакансия"
-//		default:
-//			title += "\(count) вакансии"
-//		}
-//		return title
-//	}
 }
-//
-//#if DEBUG
-//struct MainVacancyScene_Previews: PreviewProvider {
-//	static var globalModel: GlobalFavoritesModel = GlobalFavoritesModel()
-//	static var previews: some View {
-//		//MainSearchView().environmentObject(globalModel)
-//	}
-//}
-//#endif

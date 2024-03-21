@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct MainResponseScene: View {
+struct MainResponseView: View {
 	var body: some View {
 		ZStack {
 			Color(hex: "0C0C0C")

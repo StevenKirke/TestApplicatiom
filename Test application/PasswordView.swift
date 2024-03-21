@@ -16,24 +16,26 @@ enum NamePasswordFields: Int, CaseIterable {
 
 struct PasswordView: View {
 
-	@EnvironmentObject var globalModel: GlobalFavoritesModel
+	@EnvironmentObject var globalModelFavorites: GlobalFavoritesModel
+	@ObservedObject var passwordVM: PasswordViewModel
+
+	var iterator: IPasswordIterator?
+
 	@FocusState private var focus: NamePasswordFields?
 	@State var isPasswordView: Bool = false
 	@State private var passwords: [String] = ["", "", "", ""]
 	@State private var isBlockButton: Bool = true
-	var eMail: String
 
 	var body: some View {
-		NavigationStack {
 			ZStack {
 				Color(hex: "0C0C0C")
 				VStack(alignment: .leading, spacing: 15) {
-					Text("Отправили код на \(eMail)")
-						.font(.system(size: 20, weight: .semibold))
+					Text("Отправили код на \(passwordVM.email)")
+						.customFont(style: .titleTwo)
 						.tint(Color.white)
 						.foregroundColor(.white)
 					Text("Напишите его, чтобы подтвердить, что это вы, а не кто-то другой входит в личный кабинет")
-						.font(.system(size: 16, weight: .medium))
+						.customFont(style: .titleThree)
 						.foregroundColor(.white)
 					HStack(spacing: 8) {
 						ForEach(NamePasswordFields.allCases, id: \.self) { element in
@@ -59,12 +61,12 @@ struct PasswordView: View {
 					}
 					Button(
 						action: {
-							globalModel.isAutorized = true
-							isPasswordView.toggle()
+							globalModelFavorites.isAuthorized = true
+							iterator?.nextView()
 						},
 						label: {
 							Text("Подтвердить")
-								.font(.system(size: 14, weight: .regular))
+								.customFont(style: .textOne)
 								.foregroundColor(.white)
 								.frame(maxWidth: .infinity, maxHeight: 48)
 								.background(isBlockButton ? Color(hex: "00427D") : Color(hex: "2B7EFE"))
@@ -81,10 +83,6 @@ struct PasswordView: View {
 			.edgesIgnoringSafeArea(.all)
 			.navigationBarTitle("", displayMode: .inline)
 			.navigationBarBackButtonHidden(true)
-			.navigationDestination(isPresented: $isPasswordView) {
-				//MainSearchView(mainSearchViewModel: MainSearchViewModel()).environmentObject(globalModel)
-			}
-		}
 	}
 }
 
@@ -121,11 +119,3 @@ private struct PasswordField: View {
 		.cornerRadius(8.0)
 	}
 }
-
-#if DEBUG
-struct PasswordView_Previews: PreviewProvider {
-	static var previews: some View {
-		PasswordView(eMail: "")
-	}
-}
-#endif

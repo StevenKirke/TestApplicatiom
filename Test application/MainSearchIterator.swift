@@ -9,18 +9,18 @@ import Foundation
 
 protocol IMainSearchIterator: AnyObject {
 	func fitchVacancies()
-	func nextView()
+	func nextView(id: String)
 }
 
 final class MainSearchIterator {
 
 	// MARK: - Dependencies
 	let worker: IMainSearchWorker
-	let viewModel: MainSearchViewModel
+	let viewModel: IMainSearchViewModel
 
 	// MARK: - Initializator
 	internal init(
-		viewModel: MainSearchViewModel,
+		viewModel: IMainSearchViewModel,
 		worker: IMainSearchWorker
 	) {
 		self.viewModel = viewModel
@@ -40,13 +40,17 @@ extension MainSearchIterator: IMainSearchIterator {
 				if case let .showOffers(offers) = model {
 					self.viewModel.presentOffers(present: offers)
 				}
+				if case let .showCountVacancy(counterVacancies) = model {
+					self.viewModel.precentCounterVacancies(present: counterVacancies)
+				}
 			case .failure(let error):
+				#warning("TODO: Обработка ошибки. Модальное окно или другой вид взаимодействия")
 				print("Error from Worker \(error.localizedDescription)")
 			}
 		}
 	}
 
-	func nextView() {
-		viewModel.nextScene()
+	func nextView(id: String) {
+		viewModel.nextScene(id: id)
 	}
 }

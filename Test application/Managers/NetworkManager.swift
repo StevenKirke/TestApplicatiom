@@ -90,7 +90,6 @@ final class NetworkManager: INetworkManager {
 					returnModel(.failure(.errorEmptyData))
 					return
 				}
-
 				returnModel(.success(currentData))
 			}
 		}

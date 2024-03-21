@@ -9,22 +9,21 @@ import SwiftUI
 
 struct LoginView: View {
 	@EnvironmentObject var globalModel: GlobalFavoritesModel
-	@State var textFiled: String = "Test@gmail.com"
-	@State var isLoginView: Bool = false
+	@State var textFiled: String = ""
+	@State var isNextView: Bool = false
+	var iterator: ILoginIterator?
 
 	var body: some View {
-		NavigationStack {
-			ZStack {
-				Color(hex: "0C0C0C")
-					.edgesIgnoringSafeArea(/*@START_MENU_TOKEN@*/.all/*@END_MENU_TOKEN@*/)
-				VStack(spacing: 18) {
-					CardSearchWork(textFiled: $textFiled, isLoginView: $isLoginView)
-					CardSearchPerson()
-				}
-				.padding(.horizontal, 17)
+		ZStack {
+			Color(hex: "0C0C0C")
+				.edgesIgnoringSafeArea(/*@START_MENU_TOKEN@*/.all/*@END_MENU_TOKEN@*/)
+			VStack(spacing: 18) {
+				CardSearchWork(textFiled: $textFiled, isLoginView: $isNextView)
+				CardSearchPerson()
 			}
-			.navigationDestination(isPresented: $isLoginView) {
-				PasswordView(eMail: textFiled).environmentObject(globalModel)
+			.padding(.horizontal, 17)
+			.onChange(of: isNextView) { _ in
+				iterator?.nextView(eMail: textFiled)
 			}
 		}
 	}
@@ -50,7 +49,7 @@ private struct CardSearchWork: View {
 	var body: some View {
 		VStack(spacing: 16) {
 			Text("Поиск работы")
-				.font(.system(size: 16, weight: .medium))
+				.customFont(style: .titleThree)
 				.foregroundColor(.white)
 				.frame(maxWidth: .infinity, alignment: .leading)
 			VStack(spacing: 8) {
@@ -58,7 +57,7 @@ private struct CardSearchWork: View {
 				if isShowAlertLabel {
 					Text("Вы ввели неверный e-mail")
 						.foregroundColor(Color(hex: "FF0000"))
-						.font(.system(size: 13, weight: .regular))
+						.customFont(style: .textOne)
 						.frame(maxWidth: .infinity, alignment: .leading)
 				}
 			}
@@ -72,7 +71,7 @@ private struct CardSearchWork: View {
 						},
 						label: {
 							Text("Продолжить")
-								.font(.system(size: 14, weight: .regular))
+								.customFont(style: .titleFour)
 								.foregroundColor(.white)
 								.frame(maxWidth: width, maxHeight: 40)
 								.background(textFiled.isEmpty ? Color(hex: "00427D") : Color(hex: "2B7EFE"))
@@ -86,7 +85,7 @@ private struct CardSearchWork: View {
 						},
 						label: {
 							Text("Войти с паролем")
-								.font(.system(size: 14, weight: .regular))
+								.customFont(style: .titleFour)
 								.foregroundColor(Color(hex: "2B7EFE"))
 						}
 					)
@@ -138,7 +137,7 @@ private struct TextFieldEmail: View {
 						}
 					)
 					Text("Электронная почта или телефон")
-						.font(.system(size: 14, weight: .regular))
+						.customFont(style: .textOne)
 				}
 				.foregroundColor(Color(hex: "9F9F9F"))
 				.padding(.leading, 8)
@@ -197,11 +196,11 @@ private struct CardSearchPerson: View {
 		VStack(spacing: 16) {
 			VStack(spacing: 8) {
 				Text("Поиск сотрудников")
-					.font(.system(size: 16, weight: .medium))
+					.customFont(style: .titleThree)
 					.foregroundColor(.white)
 					.frame(maxWidth: .infinity, alignment: .leading)
 				Text("Размещение вакансий и доступ к базе резюме")
-					.font(.system(size: 14, weight: .regular))
+					.customFont(style: .textOne)
 					.foregroundColor(.white)
 					.frame(maxWidth: .infinity, alignment: .leading)
 			}
@@ -209,7 +208,7 @@ private struct CardSearchPerson: View {
 				action: {},
 				label: {
 					Text("Продолжить")
-						.font(.system(size: 14, weight: .regular))
+						.customFont(style: .textOne)
 						.foregroundColor(.white)
 						.frame(maxWidth: .infinity, maxHeight: 40)
 						.background(Color(hex: "4CB24E"))
@@ -224,11 +223,3 @@ private struct CardSearchPerson: View {
 		.shadow(color: .black.opacity(0.25), radius: 4, x: 0.0, y: 4.0)
 	}
 }
-
-//#if DEBUG
-//struct LoginView_Previews: PreviewProvider {
-//	static var previews: some View {
-//		ContentView()
-//	}
-//}
-//#endif

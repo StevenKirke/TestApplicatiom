@@ -8,42 +8,54 @@
 import SwiftUI
 
 struct VacanciesCollection: View {
-	@EnvironmentObject var globalModel: GlobalFavoritesModel
+	@EnvironmentObject var globalModelFavorites: GlobalFavoritesModel
 	@Binding var vacancyList: [MainSearchModel.ViewModel.Vacancy]
 	@Binding var isMainVacancyViewController: Bool
+	@Binding var currentID: String
 
 	var body: some View {
 		VStack(alignment: .leading, spacing: 16) {
-			Text("Вакансии для вас \(globalModel.count)")
-				.font(.system(size: 20, weight: .semibold))
+			Text("Вакансии для вас")
+				.customFont(style: .titleTwo)
 				.foregroundColor(.white)
 			ForEach(vacancyList.indices, id: \.self) { index in
 				if index <= 2 {
 					VacancyCard(
 						modelVacancy: $vacancyList[index],
-						isMainVacancyViewController: $isMainVacancyViewController
+						isMainVacancyViewController: $isMainVacancyViewController,
+						currentID: $currentID
 					)
+					.environmentObject(globalModelFavorites)
 				}
 			}
 		}
+	}
+
+	private func reloadGlobalFavoritesModel() {
+		globalModelFavorites.addVacancy()
 	}
 }
 
 private struct VacancyCard: View {
 
+	@EnvironmentObject var globalModelFavorites: GlobalFavoritesModel
 	@State private var scale: Double = 1
 	@Binding var modelVacancy: MainSearchModel.ViewModel.Vacancy
 	@Binding var isMainVacancyViewController: Bool
-
-	private let time: Double = 0.6
+	@Binding var currentID: String
+	private let time: Double = 0.4
 
 	var body: some View {
 		VStack(spacing: 21) {
 			VStack(alignment: .leading, spacing: 10) {
-				LabelViews(countHuman: modelVacancy.lookingNumber, isFavorite: $modelVacancy.isFavorite)
+				LabelViews(
+					countHuman: modelVacancy.lookingNumber,
+					isFavorite: modelVacancy.isFavorite
+				)
+				.environmentObject(globalModelFavorites)
 				Text(modelVacancy.title)
 					.foregroundColor(Color.white)
-					.font(.system(size: 16, weight: .medium))
+					.customFont(style: .titleThree)
 				LabelNameCompany(town: modelVacancy.address.town, company: modelVacancy.company)
 				LabelExperience(experience: modelVacancy.experience)
 				Text(modelVacancy.publishedDate)
@@ -54,7 +66,7 @@ private struct VacancyCard: View {
 				action: {},
 				label: {
 					Text("Откликнуться")
-						.font(.system(size: 14, weight: .regular))
+						.customFont(style: .textOne)
 						.foregroundColor(.white)
 						.frame(maxWidth: .infinity)
 						.frame(height: 32)
@@ -68,6 +80,7 @@ private struct VacancyCard: View {
 		.cornerRadius(8.0)
 		.scaleEffect(CGSize(width: scale, height: scale))
 		.onTapGesture {
+			currentID = modelVacancy.id
 			scaleCard()
 		}
 		.onDisappear {
@@ -93,16 +106,17 @@ private struct VacancyCard: View {
 
 private struct LabelViews: View {
 
-	@EnvironmentObject var globalModel: GlobalFavoritesModel
-
+	@EnvironmentObject var globalModelFavorites: GlobalFavoritesModel
 	let countHuman: String
-	@Binding var isFavorite: Bool
+	@State var isFavorite: Bool = false
 
 	var body: some View {
 		HStack(spacing: 8) {
-			Text(countHuman)
-				.foregroundColor(Color(hex: "4CB24E"))
-				.font(.system(size: 14, weight: .regular))
+			if !countHuman.isEmpty {
+				Text("\(countHuman)")
+					.foregroundColor(Color(hex: "4CB24E"))
+					.customFont(style: .textOne)
+			}
 			Spacer()
 			Button(
 				action: {
@@ -116,20 +130,15 @@ private struct LabelViews: View {
 			)
 		}
 		.foregroundColor(Color.white)
-		.onAppear {
-			if isFavorite {
-				globalModel.addVacancy()
-			}
-		}
 	}
 
 	private func changeIsFavorite() {
 		DispatchQueue.main.async {
 			isFavorite.toggle()
 			if isFavorite {
-				globalModel.addVacancy()
+				globalModelFavorites.addVacancy()
 			} else {
-				globalModel.removeVacancy()
+				globalModelFavorites.removeVacancy()
 			}
 
 		}
@@ -161,13 +170,13 @@ private struct LabelNameCompany: View {
 			Text(town)
 			HStack(spacing: 8) {
 				Text(company)
+					.customFont(style: .textOne)
 				Image("Images/Icons/IconClock")
 					.resizable()
 					.scaledToFit()
 					.frame(width: 12)
 			}
 		}
-		.font(.system(size: 14, weight: .regular))
 		.foregroundColor(Color.white)
 	}
 }

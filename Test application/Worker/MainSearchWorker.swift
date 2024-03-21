@@ -7,7 +7,6 @@
 
 import Foundation
 
-
 protocol IMainSearchWorker: AnyObject {
 	func getVacancyList(response: @escaping (Result<MainSearchModel.Response, Error>) -> Void)
 }
@@ -18,19 +17,22 @@ final class MainSearchWorker: IMainSearchWorker {
 	let networkManager: INetworkManager
 	let convertorVacancyDTO: IConvertorVacanciesDTO
 	let convertorOffersDTO: IConvertorOffersDTO
+	let convertorCounterVacancies: IConvertCounterVacanciesService
 
 	init(
 		assemblerURL: AssemblerURLService,
 		decodeJSONManager: IDecodeJsonManager,
 		networkManager: INetworkManager,
 		convertorVacancyDTO: IConvertorVacanciesDTO,
-		convertorOffersDTO: IConvertorOffersDTO
+		convertorOffersDTO: IConvertorOffersDTO,
+		convertorCounterVacancies: IConvertCounterVacanciesService
 	) {
 		self.assemblerURL = assemblerURL
 		self.decodeJSONManager = decodeJSONManager
 		self.networkManager = networkManager
 		self.convertorVacancyDTO = convertorVacancyDTO
 		self.convertorOffersDTO = convertorOffersDTO
+		self.convertorCounterVacancies = convertorCounterVacancies
 	}
 
 	func getVacancyList(response: @escaping (Result<MainSearchModel.Response, Error>) -> Void) {
@@ -45,9 +47,16 @@ final class MainSearchWorker: IMainSearchWorker {
 						let vacancies = modelDTO.vacancies
 						let modeVacancies = self.convertorVacancyDTO.converterModel(modelDTO: vacancies)
 						response(.success(.showVacancies(modeVacancies)))
+
 						let offers = modelDTO.offers
 						let modelOffers = self.convertorOffersDTO.converterModel(modelDTO: offers)
 						response(.success(.showOffers(modelOffers)))
+
+						let countVacancies = modelDTO.vacancies.count
+						let assemblerCounterVacancies = self.convertorCounterVacancies.convertCounterVacancies(
+							countVacancies: countVacancies
+						)
+						response(.success(.showCountVacancy(assemblerCounterVacancies)))
 					case .failure(let error):
 						response(.failure(error))
 					}

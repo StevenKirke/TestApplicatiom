@@ -8,20 +8,22 @@
 import SwiftUI
 
 struct TabBarView: View {
-	@EnvironmentObject var globalModel: GlobalFavoritesModel
+	@EnvironmentObject var globalModelFavorites: GlobalFavoritesModel
+	@EnvironmentObject var tabBarCoordinator: TabBarCoordinator
 	@State var safeAreaBottom: CGFloat = .zero
-	@State var favoriteCount: Int = 1
-	@Binding var currentItem: TabBarPage
 
 	var body: some View {
 		VStack(spacing: 0) {
 			HStack(spacing: 0) {
 				ForEach(TabBarPage.allCases, id: \.self) { item in
 					Button {
-						changeTabBarItem(item: item)
+						if globalModelFavorites.isAuthorized {
+							changeTabBarItem(item: item)
+							tabBarCoordinator.changePage(item, globalModelFavorites: globalModelFavorites)
+						}
 					} label: {
-						ButtonTabBar(item: item, content: checkFavourite(item, count: globalModel.count))
-							.foregroundColor(self.currentItem == item ? Color.blue : Color.white)
+						ButtonTabBar(item: item, content: checkFavourite(item, count: globalModelFavorites.count))
+							.foregroundColor(tabBarCoordinator.tabBarPage == item ? Color.blue : Color.white)
 					}
 					.frame(maxWidth: .infinity, maxHeight: 54)
 				}
@@ -38,13 +40,13 @@ struct TabBarView: View {
 	private func changeTabBarItem(item: TabBarPage) {
 		DispatchQueue.main.async {
 			withAnimation(.easeInOut) {
-				self.currentItem = item
+				tabBarCoordinator.changePage(item, globalModelFavorites: globalModelFavorites)
 			}
 		}
 	}
 
 	private func checkFavourite(_ item: TabBarPage, count: Int) -> AnyView {
-		if item == .favourites && count != 0 {
+		if item == .favoriteFlow && count != 0 {
 			return AnyView(FavoriteCountView(count: count))
 		} else {
 			return AnyView(EmptyView())
@@ -71,7 +73,7 @@ private struct ButtonTabBar<Content: View>: View {
 			}
 			.frame(width: 24, height: 24)
 			Text(item.title)
-				.font(.system(size: 10, weight: .regular))
+				.customFont(style: .tabText)
 		}
 	}
 }
@@ -90,11 +92,3 @@ struct FavoriteCountView: View {
 		}
 	}
 }
-
-#if DEBUG
-struct TabBarView_Previews: PreviewProvider {
-	static var previews: some View {
-		TabBarView(currentItem: .constant(.search))
-	}
-}
-#endif

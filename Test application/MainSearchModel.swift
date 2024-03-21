@@ -21,10 +21,11 @@ enum MainSearchModel {
 	enum Response {
 		case showVacancies([Vacancy])
 		case showOffers([Offer])
+		case showCountVacancy(String)
 		case failure
 
 		struct Vacancy {
-			let id: String?
+			let id: String
 			let lookingNumber: String
 			let title: String
 			let address: Address
@@ -48,10 +49,11 @@ enum MainSearchModel {
 
 	enum ViewModel {
 		case showVacancyList([Vacancy])
+		case showCountVacancy(String)
 		case failure
 
 		struct Vacancy {
-			let id: String?
+			let id: String
 			let lookingNumber: String
 			let title: String
 			let address: Address

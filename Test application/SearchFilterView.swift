@@ -27,7 +27,7 @@ private struct SearchView: View {
 					.foregroundColor(Color(hex: "9F9F9F"))
 				Text("Должность, ключевые слова")
 					.foregroundColor(Color(hex: "9F9F9F"))
-					.font(.system(size: 14, weight: .regular))
+					.customFont(style: .textOne)
 					.shadow(color: .black, radius: 1)
 			}
 			.padding(.trailing, 19)

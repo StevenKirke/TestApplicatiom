@@ -209,6 +209,14 @@
 			path = Coordinators;
 			sourceTree = "<group>";
 		};
+		32CD66182BAC524E00578895 /* Styles */ = {
+			isa = PBXGroup;
+			children = (
+				32CD66162BAC48A900578895 /* StylesFonts.swift */,
+			);
+			path = Styles;
+			sourceTree = "<group>";
+		};
 		32ED18192BA34360009EF453 = {
 			isa = PBXGroup;
 			children = (
@@ -230,6 +238,7 @@
 		32ED18242BA34360009EF453 /* Test application */ = {
 			isa = PBXGroup;
 			children = (
+				32CD66182BAC524E00578895 /* Styles */,
 				32CD660B2BAC3CE500578895 /* GlobalModel */,
 				32CD660D2BAC3DF000578895 /* Coordinators */,
 				32CD660A2BAC3C9A00578895 /* ConertorsDTO */,
@@ -239,7 +248,6 @@
 				32ED183E2BA3470E009EF453 /* Flows */,
 				32ED183D2BA346BB009EF453 /* Resources */,
 				32CD66082BAC3C0F00578895 /* Application */,
-				32CD66162BAC48A900578895 /* StylesFonts.swift */,
 			);
 			path = "Test application";
 			sourceTree = "<group>";

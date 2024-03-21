@@ -30,6 +30,8 @@
      ├── README.md
      ├── swiftlint.yml
      └── Test application
+        ├── Styles
+        │   └── StylesFonts.swift
         ├── GlobalModel
         │   └── GlobalFavoritesModel.swift
         ├── Coordinators
